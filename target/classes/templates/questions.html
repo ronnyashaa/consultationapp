@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Questions</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+          crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+            crossorigin="anonymous"></script>
+</head>
+<body>
+<div style="width: 100%; max-width: 1200px; margin: 0 auto">
+    <header>
+        <a href="/logout">Вийти з акаунту</a>
+    </header>
+    <div>
+        <h4>Додати питання</h4>
+        <form th:action="@{/questions}" method="post">
+            <input type="text" name="theme" placeholder="Тема" style="display: flex">
+            <textarea name="text" placeholder="Текст" cols="60" rows="5" style="resize: none; display: flex"></textarea>
+            <input type="text" name="keyword" placeholder="Ключові слова" style="display: flex">
+            <button type="submit">Створити</button>
+        </form>
+        <div th:if="${param.error}" class="alert alert-danger" role="alert">
+            <span th:text="${param.error}"></span>
+        </div>
+    </div>
+    <div style="display: flex; margin-top: 10px">
+        <h4>Пошук питань</h4>
+        <form th:action="@{/questions/search}" method="get" style="margin-inline: 10px">
+            <input type="text" name="word" placeholder="Ключове слово" style="width: 200px;">
+            <button type="submit" style="width: 100px;">Пошук</button>
+        </form>
+        <form th:action="@{/questions}" method="get">
+            <button type="submit" style="width: 100px;">Скасувати</button>
+        </form>
+    </div>
+    <h2>Питання</h2>
+    <ul>
+        <li th:each="question : ${questions}">
+            <a th:href="@{/questions/{id}(id=${question.id})}" th:text="${question.theme}" style="display: flex"></a>
+            <a th:if="${question.getIsAnswered()}" style="display: flex">[ВІДПОВІДЬ ОТРИМАНО]</a>
+            <a th:if="${!question.getKeywordsString().isBlank()}"
+               th:text="'Ключові слова: ' + ${question.getKeywordsString()}"></a>
+            <form th:if="${question.getUser().getUsername() == user.getUsername()}"
+                  th:action="@{/questions/delete/{id}(id=${question.id})}"
+                  method="post">
+                <input type="hidden" name="_method" value="delete"/>
+                <button type="submit">Видалити</button>
+            </form>
+        </li>
+    </ul>
+</div>
+</body>
+</html>
